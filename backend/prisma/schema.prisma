@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =======================
+// ENUMS
+// =======================
+
+enum UserRole {
+  USER
+  TECHNICIAN
+  MANAGER
+}
+
+enum RequestType {
+  CORRECTIVE
+  PREVENTIVE
+}
+
+enum RequestStatus {
+  NEW
+  IN_PROGRESS
+  REPAIRED
+  SCRAP
+}
+
+// =======================
+// USER
+// =======================
+
+model User {
+  id       String   @id @default(uuid())
+  name     String
+  email    String   @unique
+  password String
+  role     UserRole
+
+  teamId String?
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  createdRequests  MaintenanceRequest[] @relation("CreatedBy")
+  assignedRequests MaintenanceRequest[] @relation("AssignedTechnician")
+
+  createdAt DateTime    @default(now())
+  Equipment Equipment[]
+}
+
+// =======================
+// TEAM
+// =======================
+
+model Team {
+  id   String @id @default(uuid())
+  name String
+
+  members   User[]
+  equipment Equipment[]
+  requests  MaintenanceRequest[]
+}
+
+// =======================
+// EQUIPMENT CATEGORY
+// =======================
+
+model EquipmentCategory {
+  id   String @id @default(uuid())
+  name String
+
+  equipment Equipment[]
+}
+
+// =======================
+// WORK CENTER
+// =======================
+
+model WorkCenter {
+  id   String @id @default(uuid())
+  name String
+
+  requests  MaintenanceRequest[]
+  Equipment Equipment[]
+}
+
+// =======================
+// EQUIPMENT
+// =======================
+
+model Equipment {
+  id              String    @id @default(uuid())
+  name            String
+  serialNumber    String    @unique
+  location        String
+  purchaseDate    DateTime
+  warrantyEndDate DateTime?
+  isScrapped      Boolean   @default(false)
+
+  categoryId String
+  category   EquipmentCategory @relation(fields: [categoryId], references: [id])
+
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id])
+
+  defaultTechnicianId String?
+  defaultTechnician   User?   @relation(fields: [defaultTechnicianId], references: [id])
+
+  workCenterId String?
+  workCenter   WorkCenter? @relation(fields: [workCenterId], references: [id])
+
+  requests MaintenanceRequest[]
+}
+
+// =======================
+// MAINTENANCE REQUEST
+// =======================
+
+model MaintenanceRequest {
+  id      String @id @default(uuid())
+  subject String
+
+  type   RequestType
+  status RequestStatus @default(NEW)
+
+  equipmentId String?
+  equipment   Equipment? @relation(fields: [equipmentId], references: [id])
+
+  workCenterId String?
+  workCenter   WorkCenter? @relation(fields: [workCenterId], references: [id])
+
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id])
+
+  technicianId String?
+  technician   User?   @relation("AssignedTechnician", fields: [technicianId], references: [id])
+
+  createdById String
+  createdBy   User   @relation("CreatedBy", fields: [createdById], references: [id])
+
+  scheduledDate DateTime?
+  durationHours Float?
+
+  createdAt DateTime @default(now())
+}
