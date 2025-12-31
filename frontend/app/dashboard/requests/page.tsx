@@ -1,12 +1,12 @@
 "use client";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-import StatsCards from "@/components/StatCards";
+import KanbanBoard from "@/components/KanbanBoard";
 
-export default function DashboardPage() {
+export default function RequestsPage() {
   return (
     <ProtectedRoute>
-      <StatsCards />
+      <KanbanBoard />
     </ProtectedRoute>
   );
 }

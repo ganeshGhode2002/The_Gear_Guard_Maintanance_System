@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    await api.post("/auth/logout");
+    await api.get("/auth/logout");
     setUser(null);
     toast.success("Logged out successfully");
     window.location.href = "/auth/login";

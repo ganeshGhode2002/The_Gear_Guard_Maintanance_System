@@ -1,12 +1,12 @@
 "use client";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-import StatsCards from "@/components/StatCards";
+import EquipmentGrid from "@/components/EquipmentGrid";
 
-export default function DashboardPage() {
+export default function EquipmentPage() {
   return (
     <ProtectedRoute>
-      <StatsCards />
+      <EquipmentGrid />
     </ProtectedRoute>
   );
 }
