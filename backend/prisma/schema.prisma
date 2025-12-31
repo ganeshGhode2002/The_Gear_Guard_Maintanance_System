@@ -12,9 +12,10 @@ datasource db {
 // =======================
 
 enum UserRole {
-  USER
-  TECHNICIAN
+  ADMIN
   MANAGER
+  TECHNICIAN
+  EMPLOYEE
 }
 
 enum RequestType {
@@ -39,7 +40,7 @@ model User {
   email    String   @unique
   password String
   role     UserRole
-
+  isActive  Boolean  @default(true)
   teamId String?
   team   Team?   @relation(fields: [teamId], references: [id])
 
